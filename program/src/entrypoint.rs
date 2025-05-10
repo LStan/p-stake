@@ -36,11 +36,12 @@ fn process_instruction(
     // let epoch_rewards_active = EpochRewards::get()
     //         .map(|epoch_rewards| epoch_rewards.active)
     //         .unwrap_or(false);
-    // if epoch_rewards_active && !matches!(instruction, StakeInstruction::GetMinimumDelegation) {
+    // 13 == GetMinimumDelegation
+    // if epoch_rewards_active && *instruction != 13 {
     //     return Err(StakeError::EpochRewardsActive.into());
     // }
 
-    match instruction {
+    match *instruction {
         // 0 - Initialize
         0 => {
             #[cfg(feature = "logging")]

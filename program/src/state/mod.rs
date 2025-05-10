@@ -1,0 +1,48 @@
+pub mod authorized;
+pub mod delegation;
+pub mod lockup;
+pub mod meta;
+pub mod pod;
+pub mod stake;
+pub mod stake_flags;
+pub mod stake_state_v2;
+
+pub use authorized::*;
+pub use delegation::*;
+pub use lockup::*;
+pub use meta::*;
+use pinocchio::{
+    account_info::{AccountInfo, Ref},
+    program_error::ProgramError,
+};
+pub use pod::*;
+pub use stake::*;
+pub use stake_flags::*;
+pub use stake_state_v2::*;
+
+pub type Epoch = PodU64;
+pub type UnixTimestamp = PodI64;
+
+pub fn get_stake_state(
+    stake_account_info: &AccountInfo,
+) -> Result<Ref<StakeStateV2>, ProgramError> {
+    if stake_account_info.is_owned_by(&crate::ID) {
+        return Err(ProgramError::InvalidAccountOwner);
+    }
+
+    StakeStateV2::from_account_info(stake_account_info)
+}
+
+/// # Safety
+///
+/// The caller must ensure that it is safe to borrow the account data – e.g., there are
+/// no mutable borrows of the account data.
+pub unsafe fn get_stake_state_unchecked(
+    stake_account_info: &AccountInfo,
+) -> Result<&StakeStateV2, ProgramError> {
+    if stake_account_info.owner() != &crate::ID {
+        return Err(ProgramError::InvalidAccountOwner);
+    }
+
+    StakeStateV2::from_account_info_unchecked(stake_account_info)
+}
