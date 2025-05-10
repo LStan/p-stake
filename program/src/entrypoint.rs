@@ -3,6 +3,8 @@ use pinocchio::{
     program_error::ProgramError, pubkey::Pubkey, ProgramResult,
 };
 
+use crate::instruction;
+
 // This is the entrypoint for the program.
 program_entrypoint!(process_instruction);
 //Do not allocate memory.
@@ -89,7 +91,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: SetLockup");
 
-            todo!()
+            instruction::process_set_lockup(accounts, instruction_data)
         }
         // 7 - Merge
         7 => {
@@ -131,7 +133,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: SetLockupChecked");
 
-            todo!()
+            instruction::process_set_lockup_checked(accounts, instruction_data)
         }
         // 13 - GetMinimumDelegation
         13 => {

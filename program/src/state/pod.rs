@@ -1,6 +1,12 @@
 macro_rules! impl_from_number {
     ($struct_name:ident, $int_type:ty, $array_size:expr) => {
+        #[cfg(not(test))]
         #[derive(Clone, Copy, Debug, Default, PartialEq)]
+        #[repr(transparent)]
+        pub struct $struct_name([u8; $array_size]);
+
+        #[cfg(test)]
+        #[derive(Clone, Copy, Debug, Default, PartialEq, serde::Serialize)]
         #[repr(transparent)]
         pub struct $struct_name([u8; $array_size]);
 

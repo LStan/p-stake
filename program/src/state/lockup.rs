@@ -1,4 +1,4 @@
-use pinocchio::pubkey::Pubkey;
+use pinocchio::{pubkey::Pubkey, sysvars::clock::Clock};
 
 use super::{Epoch, UnixTimestamp};
 
@@ -14,4 +14,13 @@ pub struct Lockup {
     /// custodian signature on a transaction exempts the operation from
     ///  lockup constraints
     pub custodian: Pubkey,
+}
+
+impl Lockup {
+    pub fn is_in_force(&self, clock: &Clock, custodian: Option<&Pubkey>) -> bool {
+        if custodian == Some(&self.custodian) {
+            return false;
+        }
+        i64::from(self.unix_timestamp) > clock.unix_timestamp || u64::from(self.epoch) > clock.epoch
+    }
 }
