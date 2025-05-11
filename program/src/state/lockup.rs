@@ -3,7 +3,7 @@ use pinocchio::{pubkey::Pubkey, sysvars::clock::Clock};
 use super::{Epoch, UnixTimestamp};
 
 #[repr(C)]
-#[derive(Default, Debug, PartialEq)]
+#[derive(Default, Debug, PartialEq, Clone, Copy)]
 pub struct Lockup {
     /// UnixTimestamp at which this stake will allow withdrawal, unless the
     ///   transaction is signed by the custodian

@@ -49,7 +49,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: Initialize");
 
-            todo!()
+            instruction::process_initialize(accounts, instruction_data)
         }
         // 1 - Authorize
         1 => {
@@ -112,7 +112,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: InitializeChecked");
 
-            todo!()
+            instruction::process_initialize_checked(accounts, instruction_data)
         }
         // 10 - AuthorizeChecked
         10 => {
