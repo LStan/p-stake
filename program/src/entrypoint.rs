@@ -56,7 +56,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: Authorize");
 
-            todo!()
+            instruction::process_authorize(accounts, instruction_data)
         }
         // 2 - DelegateStake
         2 => {
@@ -119,7 +119,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: AuthorizeChecked");
 
-            todo!()
+            instruction::process_authorize_checked(accounts, instruction_data)
         }
         // 11 - AuthorizeCheckedWithSeed
         11 => {
@@ -149,7 +149,7 @@ fn process_instruction(
 
             todo!()
         }
-        // 15 - Redelegate
+        // 15 - Redelegate deprecated
         15 => Err(ProgramError::InvalidInstructionData),
         // 16 - MoveStake
         16 => {

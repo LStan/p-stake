@@ -244,8 +244,7 @@ fn do_set_lookup(
     signer_args: SetLockupSignerArgs,
     clock: &Clock,
 ) -> ProgramResult {
-    let mut stake_account: pinocchio::account_info::RefMut<'_, StakeStateV2> =
-        try_get_stake_state_mut(stake_account_info)?;
+    let mut stake_account = try_get_stake_state_mut(stake_account_info)?;
     match &mut *stake_account {
         StakeStateV2::Initialized(meta) => meta
             .set_lockup(lockup, signer_args, clock)
@@ -261,8 +260,7 @@ fn get_set_lockup_signer_args(
     stake_account_info: &AccountInfo,
     accounts: &[AccountInfo],
 ) -> Result<SetLockupSignerArgs, ProgramError> {
-    let stake_account: pinocchio::account_info::Ref<'_, StakeStateV2> =
-        get_stake_state(stake_account_info)?;
+    let stake_account = get_stake_state(stake_account_info)?;
 
     let mut has_custodian_signer = false;
     let mut has_withdrawer_signer = false;

@@ -9,10 +9,10 @@ use super::{Meta, Stake, StakeFlags};
 #[derive(Debug, Default, PartialEq)]
 pub enum StakeStateV2 {
     #[default]
-    Uninitialized,
-    Initialized(Meta),
-    Stake(Meta, Stake, StakeFlags),
-    RewardsPool,
+    Uninitialized = 0,
+    Initialized(Meta) = 1,
+    Stake(Meta, Stake, StakeFlags) = 2,
+    RewardsPool = 3,
 }
 
 impl StakeStateV2 {
