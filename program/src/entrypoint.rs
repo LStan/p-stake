@@ -1,6 +1,6 @@
 use pinocchio::{
-    account_info::AccountInfo, no_allocator, nostd_panic_handler, program_entrypoint,
-    program_error::ProgramError, pubkey::Pubkey, ProgramResult,
+    account_info::AccountInfo, cpi::set_return_data, no_allocator, nostd_panic_handler,
+    program_entrypoint, program_error::ProgramError, pubkey::Pubkey, ProgramResult,
 };
 
 use crate::instruction;
@@ -140,7 +140,10 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: GetMinimumDelegation");
 
-            todo!()
+            let minimum_delegation = crate::get_minimum_delegation();
+            set_return_data(&minimum_delegation.to_le_bytes());
+
+            Ok(())
         }
         // 14 - DeactivateDelinquent
         14 => {

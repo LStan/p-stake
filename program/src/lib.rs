@@ -8,3 +8,29 @@ pub mod pinocchio_add;
 pub mod state;
 
 pinocchio_pubkey::declare_id!("Stake11111111111111111111111111111111111111");
+
+pub const LAMPORTS_PER_SOL: u64 = 1_000_000_000;
+
+// placeholders for features
+// we have ONE feature in the current stake program we care about:
+// * stake_raise_minimum_delegation_to_1_sol /
+//   9onWzzvCzNC2jfhxxeqRgs5q7nFAAKpCUvkj6T6GJK9i this may or may not be
+//   activated by time we are done, but it should be confined to the program so
+//   we use a placeholder for now to call it out. but we can just change the
+//   program. it is unclear if or when it will ever be activated, because it
+//   requires a validator vote
+const FEATURE_STAKE_RAISE_MINIMUM_DELEGATION_TO_1_SOL: bool = false;
+
+/// The minimum stake amount that can be delegated, in lamports.
+/// NOTE: This is also used to calculate the minimum balance of a delegated
+/// stake account, which is the rent exempt reserve _plus_ the minimum stake
+/// delegation.
+#[inline(always)]
+pub fn get_minimum_delegation() -> u64 {
+    if FEATURE_STAKE_RAISE_MINIMUM_DELEGATION_TO_1_SOL {
+        const MINIMUM_DELEGATION_SOL: u64 = 1;
+        MINIMUM_DELEGATION_SOL * LAMPORTS_PER_SOL
+    } else {
+        1
+    }
+}
