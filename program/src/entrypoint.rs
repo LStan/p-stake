@@ -1,9 +1,10 @@
 use pinocchio::{
     account_info::AccountInfo, cpi::set_return_data, no_allocator, nostd_panic_handler,
-    program_entrypoint, program_error::ProgramError, pubkey::Pubkey, ProgramResult,
+    program_entrypoint, program_error::ProgramError, pubkey::Pubkey, sysvars::Sysvar,
+    ProgramResult,
 };
 
-use crate::instruction;
+use crate::{instruction, pinocchio_add::epoch_rewards::EpochRewards};
 
 // This is the entrypoint for the program.
 program_entrypoint!(process_instruction);
@@ -34,14 +35,13 @@ fn process_instruction(
 
     let instruction = &ix_disc[0];
 
-    // TODO: add check for epoch_rewards_active
-    // let epoch_rewards_active = EpochRewards::get()
-    //         .map(|epoch_rewards| epoch_rewards.active)
-    //         .unwrap_or(false);
+    let epoch_rewards_active = EpochRewards::get()
+        .map(|epoch_rewards| epoch_rewards.active)
+        .unwrap_or(false);
     // 13 == GetMinimumDelegation
-    // if epoch_rewards_active && *instruction != 13 {
-    //     return Err(StakeError::EpochRewardsActive.into());
-    // }
+    if epoch_rewards_active && *instruction != 13 {
+        return Err(ProgramError::Custom(16));
+    }
 
     match *instruction {
         // 0 - Initialize
