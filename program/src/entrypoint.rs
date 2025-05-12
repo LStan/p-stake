@@ -105,7 +105,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: AuthorizeWithSeed");
 
-            todo!()
+            instruction::process_authorize_with_seed(accounts, instruction_data)
         }
         // 9 - InitializeChecked
         9 => {
@@ -126,7 +126,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: AuthorizeCheckedWithSeed");
 
-            todo!()
+            instruction::process_authorize_checked_with_seed(accounts, instruction_data)
         }
         // 12 - SetLockupChecked
         12 => {

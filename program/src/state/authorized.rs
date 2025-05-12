@@ -19,7 +19,6 @@ pub enum StakeAuthorize {
 }
 
 pub struct AuthorizeSignerArgs {
-    pub has_custodian_signer: bool,
     pub has_staker_signer: bool,
     pub has_withdrawer_signer: bool,
 }
@@ -49,11 +48,8 @@ impl Authorized {
                             return Err(InstructionError::Custom(7));
                         }
                         Some(custodian) => {
-                            // TODO: optimize, this check is not needed because custodian is always a signer if not None
-                            if !signer_args.has_custodian_signer {
-                                // TODO check error type
-                                return Err(InstructionError::Custom(8));
-                            }
+                            // TODO: check this:
+                            // custodian is always a signer if not None
 
                             if lockup.is_in_force(clock, Some(custodian)) {
                                 // TODO check error type
