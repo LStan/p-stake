@@ -84,7 +84,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: Deactivate");
 
-            todo!()
+            instruction::process_deactivate(accounts, instruction_data)
         }
         // 6 - SetLockup
         6 => {
