@@ -5,20 +5,25 @@ pub mod meta;
 pub mod pod;
 pub mod stake;
 pub mod stake_flags;
+pub mod stake_history_entry;
+pub mod stake_history_sysvar;
 pub mod stake_state_v2;
 
 pub use authorized::*;
 pub use delegation::*;
 pub use lockup::*;
 pub use meta::*;
+pub use pod::*;
+pub use stake::*;
+pub use stake_flags::*;
+pub use stake_history_entry::*;
+pub use stake_history_sysvar::*;
+pub use stake_state_v2::*;
+
 use pinocchio::{
     account_info::{AccountInfo, Ref, RefMut},
     program_error::ProgramError,
 };
-pub use pod::*;
-pub use stake::*;
-pub use stake_flags::*;
-pub use stake_state_v2::*;
 
 pub type Epoch = PodU64;
 pub type UnixTimestamp = PodI64;

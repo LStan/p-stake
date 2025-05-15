@@ -347,6 +347,7 @@ fn get_authorize_signer_args(
     let mut has_staker_signer = false;
     let mut has_withdrawer_signer = false;
 
+    // TODO: check difference between * + ref and &*
     match *stake_account {
         StakeStateV2::Initialized(ref meta) | StakeStateV2::Stake(ref meta, _, _) => {
             for account in accounts {
