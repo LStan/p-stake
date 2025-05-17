@@ -20,4 +20,25 @@ impl Stake {
             Ok(())
         }
     }
+
+    pub fn split(
+        &mut self,
+        remaining_stake_delta: u64,
+        split_stake_amount: u64,
+    ) -> Result<Self, ProgramError> {
+        let stake = u64::from(self.delegation.stake);
+        if remaining_stake_delta > stake {
+            // StakeError::InsufficientStake
+            return Err(ProgramError::Custom(4));
+        }
+        self.delegation.stake = (stake - remaining_stake_delta).into();
+        let new = Self {
+            delegation: Delegation {
+                stake: split_stake_amount.into(),
+                ..self.delegation
+            },
+            ..*self
+        };
+        Ok(new)
+    }
 }

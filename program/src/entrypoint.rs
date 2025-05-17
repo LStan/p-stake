@@ -70,14 +70,14 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: Split");
 
-            todo!()
+            instruction::process_split(accounts, instruction_data)
         }
         // 4 - Withdraw
         4 => {
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: Withdraw");
 
-            todo!()
+            instruction::process_withdraw(accounts, instruction_data)
         }
         // 5 - Deactivate
         5 => {

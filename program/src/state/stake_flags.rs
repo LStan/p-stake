@@ -1,5 +1,5 @@
 #[repr(C)]
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct StakeFlags {
     bits: u8,
 }

@@ -5,7 +5,7 @@ use crate::{error::InstructionError, instruction::LockupArgs};
 use super::{Authorized, Lockup, PodU64};
 
 #[repr(C)]
-#[derive(Default, Debug, PartialEq)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct Meta {
     pub rent_exempt_reserve: PodU64,
     pub authorized: Authorized,

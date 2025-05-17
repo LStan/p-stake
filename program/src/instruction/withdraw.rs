@@ -44,6 +44,7 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
 
     let mut stake_account = try_get_stake_state_mut(source_stake_account_info)?;
 
+    // TODO: lockup copy happens here, but could be avoided using a ref or inline the is_in_force check
     let (lockup, reserve, is_staked) = match &*stake_account {
         StakeStateV2::Stake(meta, stake, _stake_flag) => {
             if let Some(custodian) = custodian {
