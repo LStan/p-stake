@@ -98,7 +98,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: Merge");
 
-            todo!()
+            instruction::process_merge(accounts, instruction_data)
         }
         // 8 - AuthorizeWithSeed
         8 => {

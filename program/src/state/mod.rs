@@ -1,6 +1,7 @@
 pub mod authorized;
 pub mod delegation;
 pub mod lockup;
+pub mod merge_kind;
 pub mod meta;
 pub mod pod;
 pub mod stake;
@@ -12,6 +13,7 @@ pub mod stake_state_v2;
 pub use authorized::*;
 pub use delegation::*;
 pub use lockup::*;
+pub use merge_kind::*;
 pub use meta::*;
 pub use pod::*;
 pub use stake::*;

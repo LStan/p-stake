@@ -3,7 +3,7 @@ use pinocchio::program_error::ProgramError;
 use super::{Delegation, Epoch, PodU64};
 
 #[repr(C)]
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct Stake {
     pub delegation: Delegation,
     /// credits observed is credits from vote account state when delegated or redeemed

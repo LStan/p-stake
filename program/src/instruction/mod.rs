@@ -1,6 +1,7 @@
 pub mod authorize;
 pub mod deactivate;
 pub mod initialize;
+pub mod merge;
 pub mod set_lockup;
 pub mod split;
 pub mod withdraw;
@@ -8,6 +9,7 @@ pub mod withdraw;
 pub use authorize::*;
 pub use deactivate::*;
 pub use initialize::*;
+pub use merge::*;
 pub use set_lockup::*;
 pub use split::*;
 pub use withdraw::*;

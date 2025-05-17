@@ -168,7 +168,7 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
 
 // TODO probably inline(always)
 #[inline]
-fn check_signers(accounts: &[AccountInfo], meta: &mut Meta) -> Result<(), ProgramError> {
+fn check_signers(accounts: &[AccountInfo], meta: &Meta) -> Result<(), ProgramError> {
     let mut has_signer = false;
     for account in accounts {
         if account.is_signer() {
