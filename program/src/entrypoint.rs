@@ -166,7 +166,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: MoveLamports");
 
-            todo!()
+            instruction::process_move_lamports(accounts, instruction_data)
         }
         _ => Err(ProgramError::InvalidInstructionData),
     }
