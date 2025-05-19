@@ -1,9 +1,11 @@
-use pinocchio::sysvars::clock::Epoch;
-use pinocchio_pubkey::from_str;
+use pinocchio::{pubkey::Pubkey, sysvars::clock::Epoch};
+use pinocchio_pubkey::pubkey;
 
 use crate::pinocchio_add::sysvar::get_sysvar_unchecked;
 
 use super::StakeHistoryEntry;
+
+pub const SYSVAR_STAKE_HISTORY_ID: Pubkey = pubkey!("SysvarStakeHistory1111111111111111111111111");
 
 #[derive(Debug, PartialEq)]
 pub struct StakeHistorySysvar(pub Epoch);
@@ -41,7 +43,7 @@ impl StakeHistorySysvar {
         let result = unsafe {
             get_sysvar_unchecked(
                 &mut entry_buf,
-                &from_str("SysvarStakeHistory1111111111111111111111111"),
+                &SYSVAR_STAKE_HISTORY_ID,
                 offset,
                 EPOCH_AND_ENTRY_SERIALIZED_SIZE,
             )

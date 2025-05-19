@@ -186,7 +186,7 @@ impl MergeKind {
     }
 }
 
-fn merge_delegation_stake_and_credits_observed(
+pub fn merge_delegation_stake_and_credits_observed(
     stake: &mut Stake,
     absorbed_lamports: u64,
     absorbed_credits_observed: u64,

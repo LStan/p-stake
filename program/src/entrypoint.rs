@@ -159,7 +159,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: MoveStake");
 
-            todo!()
+            instruction::process_move_stake(accounts, instruction_data)
         }
         // 17 - MoveLamports
         17 => {
