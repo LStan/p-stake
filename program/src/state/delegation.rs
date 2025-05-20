@@ -38,6 +38,15 @@ impl Default for Delegation {
 }
 
 impl Delegation {
+    pub fn new(voter_pubkey: &Pubkey, stake: PodU64, activation_epoch: Epoch) -> Self {
+        Self {
+            voter_pubkey: *voter_pubkey,
+            stake,
+            activation_epoch,
+            ..Delegation::default()
+        }
+    }
+
     pub fn stake_activating_and_deactivating(
         &self,
         target_epoch: clock::Epoch,

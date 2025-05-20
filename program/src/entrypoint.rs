@@ -40,6 +40,7 @@ fn process_instruction(
         .unwrap_or(false);
     // 13 == GetMinimumDelegation
     if epoch_rewards_active && *instruction != 13 {
+        // StakeError::EpochRewardsActive
         return Err(ProgramError::Custom(16));
     }
 
@@ -63,7 +64,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: DelegateStake");
 
-            todo!()
+            instruction::process_delegate(accounts, instruction_data)
         }
         // 3 - Split
         3 => {

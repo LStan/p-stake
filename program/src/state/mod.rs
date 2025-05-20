@@ -9,6 +9,7 @@ pub mod stake_flags;
 pub mod stake_history_entry;
 pub mod stake_history_sysvar;
 pub mod stake_state_v2;
+pub mod vote_state;
 
 pub use authorized::*;
 pub use delegation::*;
@@ -21,6 +22,7 @@ pub use stake_flags::*;
 pub use stake_history_entry::*;
 pub use stake_history_sysvar::*;
 pub use stake_state_v2::*;
+pub use vote_state::*;
 
 use pinocchio::{
     account_info::{AccountInfo, Ref, RefMut},

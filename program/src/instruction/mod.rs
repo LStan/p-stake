@@ -1,5 +1,6 @@
 pub mod authorize;
 pub mod deactivate;
+pub mod delegate;
 pub mod initialize;
 pub mod merge;
 pub mod move_stake_lamports;
@@ -9,6 +10,7 @@ pub mod withdraw;
 
 pub use authorize::*;
 pub use deactivate::*;
+pub use delegate::*;
 pub use initialize::*;
 pub use merge::*;
 pub use move_stake_lamports::*;
