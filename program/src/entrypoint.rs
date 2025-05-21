@@ -151,7 +151,7 @@ fn process_instruction(
             #[cfg(feature = "logging")]
             pinocchio::msg!("Instruction: DeactivateDelinquent");
 
-            todo!()
+            instruction::process_deactivate_delinquent(accounts, instruction_data)
         }
         // 15 - Redelegate deprecated
         15 => Err(ProgramError::InvalidInstructionData),

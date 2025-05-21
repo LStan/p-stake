@@ -1,5 +1,6 @@
 pub mod authorize;
 pub mod deactivate;
+pub mod deactivate_delinquent;
 pub mod delegate;
 pub mod initialize;
 pub mod merge;
@@ -10,6 +11,7 @@ pub mod withdraw;
 
 pub use authorize::*;
 pub use deactivate::*;
+pub use deactivate_delinquent::*;
 pub use delegate::*;
 pub use initialize::*;
 pub use merge::*;

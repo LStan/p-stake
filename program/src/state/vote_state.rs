@@ -1,7 +1,61 @@
-use pinocchio::{account_info::AccountInfo, program_error::ProgramError, pubkey::Pubkey};
+use pinocchio::{
+    account_info::AccountInfo, program_error::ProgramError, pubkey::Pubkey, sysvars::clock,
+};
 use pinocchio_pubkey::pubkey;
 
 const VOTE_STATE_ID: Pubkey = pubkey!("Vote111111111111111111111111111111111111111");
+pub const MINIMUM_DELINQUENT_EPOCHS_FOR_DEACTIVATION: u64 = 5;
+
+pub fn acceptable_reference_epoch_credits(
+    vote_account_info: &AccountInfo,
+    current_epoch: clock::Epoch,
+) -> Result<bool, ProgramError> {
+    if !vote_account_info.is_owned_by(&VOTE_STATE_ID) {
+        return Err(ProgramError::IncorrectProgramId);
+    }
+
+    let data = vote_account_info.try_borrow_data()?;
+
+    let mut offset = skip_to_epoch_credits(&data)?;
+    let mut epoch_credits_count = u64::from_le_bytes(data[offset..offset + 8].try_into().unwrap());
+
+    if let Some(epoch_index) =
+        epoch_credits_count.checked_sub(MINIMUM_DELINQUENT_EPOCHS_FOR_DEACTIVATION)
+    {
+        let mut epoch = current_epoch;
+
+        offset += 8;
+
+        while epoch_index != epoch_credits_count {
+            epoch_credits_count -= 1;
+            let vote_epoch = u64::from_le_bytes(
+                data[offset + epoch_credits_count as usize * (8 + 8 + 8)
+                    ..offset + epoch_credits_count as usize * (8 + 8 + 8) + 8]
+                    .try_into()
+                    .unwrap(),
+            );
+            if vote_epoch != epoch {
+                return Ok(false);
+            }
+            epoch = epoch.saturating_sub(1);
+        }
+        Ok(true)
+    } else {
+        Ok(false)
+    }
+}
+
+pub fn get_last_epoch(
+    vote_account_info: &AccountInfo,
+) -> Result<Option<clock::Epoch>, ProgramError> {
+    if !vote_account_info.is_owned_by(&VOTE_STATE_ID) {
+        return Err(ProgramError::IncorrectProgramId);
+    }
+
+    let data = &vote_account_info.try_borrow_data()?;
+
+    get_last_epoch_inner(data)
+}
 
 pub fn get_credits(vote_account_info: &AccountInfo) -> Result<u64, ProgramError> {
     if !vote_account_info.is_owned_by(&VOTE_STATE_ID) {
@@ -13,8 +67,22 @@ pub fn get_credits(vote_account_info: &AccountInfo) -> Result<u64, ProgramError>
     get_credits_inner(data)
 }
 
+fn get_last_epoch_inner(data: &[u8]) -> Result<Option<u64>, ProgramError> {
+    let mut offset = skip_to_epoch_credits(data)?;
+    let epoch_credits_count = u64::from_le_bytes(data[offset..offset + 8].try_into().unwrap());
+
+    if epoch_credits_count == 0 {
+        Ok(None)
+    } else {
+        offset += 8 + (epoch_credits_count as usize - 1) * (8 + 8 + 8);
+        Ok(Some(u64::from_le_bytes(
+            data[offset..offset + 8].try_into().unwrap(),
+        )))
+    }
+}
+
 fn get_credits_inner(data: &[u8]) -> Result<u64, ProgramError> {
-    let mut offset = skip_to_epoch_credits(data).unwrap();
+    let mut offset = skip_to_epoch_credits(data)?;
     let epoch_credits_count = u64::from_le_bytes(data[offset..offset + 8].try_into().unwrap());
 
     if epoch_credits_count == 0 {
