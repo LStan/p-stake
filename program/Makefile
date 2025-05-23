@@ -1,4 +1,7 @@
-.PHONY: build
+.PHONY: build test
 
 build:
-	cargo build-sbf
+	cargo build-sbf --features logging
+
+test: build
+	cargo test
