@@ -20,7 +20,6 @@ pub fn process_merge(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
         return Err(ProgramError::InvalidArgument);
     }
 
-    let mut source_stake = try_get_stake_state_mut(source_stake_account_info)?;
     let mut destination_stake = try_get_stake_state_mut(destination_stake_account_info)?;
 
     #[cfg(feature = "logging")]
@@ -34,6 +33,8 @@ pub fn process_merge(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
 
     // Authorized staker is allowed to split/merge accounts
     check_signers(accounts, destination_merge_kind.meta())?;
+
+    let mut source_stake = try_get_stake_state_mut(source_stake_account_info)?;
 
     #[cfg(feature = "logging")]
     pinocchio::msg!("Checking if source stake is mergeable");

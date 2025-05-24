@@ -1471,7 +1471,12 @@ async fn program_test_merge(merge_source_type: StakeLifecycle, merge_dest_type: 
     }
 
     // and store
-    source_account.data = bincode::serialize(&source_stake_state).unwrap();
+    // source_account.data = bincode::serialize(&source_stake_state).unwrap();
+    bincode::serialize_into(
+        &mut std::io::Cursor::new(&mut source_account.data),
+        &source_stake_state,
+    )
+    .unwrap();
     context.set_account(&merge_source, &source_account.into());
 
     // attempt to merge
