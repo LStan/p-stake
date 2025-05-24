@@ -69,6 +69,9 @@ fn do_initialize(
     lockup: Lockup,
     rent: &Rent,
 ) -> ProgramResult {
+    if stake_account_info.data_len() != StakeStateV2::size_of() {
+        return Err(ProgramError::InvalidAccountData);
+    }
     let mut stake_account: pinocchio::account_info::RefMut<'_, StakeStateV2> =
         try_get_stake_state_mut(stake_account_info)?;
 

@@ -25,7 +25,7 @@ impl StakeStateV2 {
     pub fn from_account_info(
         account_info: &AccountInfo,
     ) -> Result<Ref<StakeStateV2>, ProgramError> {
-        if account_info.data_len() != Self::size_of() {
+        if account_info.data_len() < Self::size_of() {
             return Err(ProgramError::InvalidAccountData);
         }
 
@@ -45,7 +45,7 @@ impl StakeStateV2 {
     pub unsafe fn from_account_info_unchecked(
         account_info: &AccountInfo,
     ) -> Result<&StakeStateV2, ProgramError> {
-        if account_info.data_len() != Self::size_of() {
+        if account_info.data_len() < Self::size_of() {
             return Err(ProgramError::InvalidAccountData);
         }
         let data = account_info.borrow_data_unchecked();
@@ -60,7 +60,7 @@ impl StakeStateV2 {
     pub fn try_from_account_info_mut(
         account_info: &AccountInfo,
     ) -> Result<RefMut<StakeStateV2>, ProgramError> {
-        if account_info.data_len() != Self::size_of() {
+        if account_info.data_len() < Self::size_of() {
             return Err(ProgramError::InvalidAccountData);
         }
 
@@ -82,7 +82,7 @@ impl StakeStateV2 {
     pub unsafe fn from_account_info_mut_unchecked(
         account_info: &AccountInfo,
     ) -> Result<&mut StakeStateV2, ProgramError> {
-        if account_info.data_len() != Self::size_of() {
+        if account_info.data_len() < Self::size_of() {
             return Err(ProgramError::InvalidAccountData);
         }
         let data = account_info.borrow_mut_data_unchecked();

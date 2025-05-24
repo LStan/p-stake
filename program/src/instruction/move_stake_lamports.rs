@@ -76,6 +76,15 @@ pub fn process_move_stake(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         stake_authority_info,
     )?;
 
+    // ensure source and destination are the right size for the current version of
+    // StakeState this a safeguard in case there is a new version of the
+    // struct that cannot fit into an old account
+    if source_stake_account_info.data_len() != StakeStateV2::size_of()
+        || destination_stake_account_info.data_len() != StakeStateV2::size_of()
+    {
+        return Err(ProgramError::InvalidAccountData);
+    }
+
     // source must be fully active
     let MergeKind::FullyActive(source_meta, mut source_stake) = source_merge_kind else {
         return Err(ProgramError::InvalidAccountData);

@@ -6,7 +6,7 @@ use pinocchio::{
 };
 
 use crate::{
-    state::{try_get_stake_state_mut, Meta, StakeHistorySysvar, StakeStateV2},
+    state::{get_stake_state, try_get_stake_state_mut, Meta, StakeHistorySysvar, StakeStateV2},
     PERPETUAL_NEW_WARMUP_COOLDOWN_RATE_EPOCH,
 };
 
@@ -27,14 +27,21 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     let clock = Clock::get()?;
     let stake_history = &StakeHistorySysvar(clock.epoch);
 
-    let mut source_stake = try_get_stake_state_mut(source_stake_account_info)?;
-    let mut destanation_stake = try_get_stake_state_mut(destination_stake_account_info)?;
-
-    if let StakeStateV2::Uninitialized = *destanation_stake {
-        // we can split into this
-    } else {
+    if destination_stake_account_info.data_len() != StakeStateV2::size_of() {
         return Err(ProgramError::InvalidAccountData);
     }
+
+    {
+        let destanation_stake = get_stake_state(destination_stake_account_info)?;
+
+        if let StakeStateV2::Uninitialized = *destanation_stake {
+            // we can split into this
+        } else {
+            return Err(ProgramError::InvalidAccountData);
+        }
+    }
+
+    let mut source_stake = try_get_stake_state_mut(source_stake_account_info)?;
 
     let source_lamport_balance = source_stake_account_info.lamports();
     let destination_lamport_balance = destination_stake_account_info.lamports();
@@ -122,6 +129,10 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
             destination_meta.rent_exempt_reserve =
                 validated_split_info.destination_rent_exempt_reserve.into();
 
+            // TODO: use unsafe from_bytes_mut here because all checks were done above
+            let mut destanation_stake =
+                StakeStateV2::try_from_account_info_mut(destination_stake_account_info)?;
+
             *destanation_stake =
                 StakeStateV2::Stake(destination_meta, destination_stake, stake_flags.clone());
         }
@@ -142,6 +153,10 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
             let mut destination_meta = source_meta.clone();
             destination_meta.rent_exempt_reserve =
                 validated_split_info.destination_rent_exempt_reserve.into();
+
+            // TODO: use unsafe from_bytes_mut here because all checks were done above
+            let mut destanation_stake =
+                StakeStateV2::try_from_account_info_mut(destination_stake_account_info)?;
 
             *destanation_stake = StakeStateV2::Initialized(destination_meta);
         }

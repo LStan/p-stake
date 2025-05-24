@@ -212,8 +212,6 @@ pub fn process_set_lockup_checked(accounts: &[AccountInfo], data: &[u8]) -> Prog
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
-    let signer_args = get_set_lockup_signer_args(stake_account_info, accounts)?;
-
     let clock = Clock::get()?;
 
     let custodian = if !remaining.is_empty() {
@@ -226,6 +224,8 @@ pub fn process_set_lockup_checked(accounts: &[AccountInfo], data: &[u8]) -> Prog
     } else {
         None
     };
+
+    let signer_args = get_set_lockup_signer_args(stake_account_info, accounts)?;
 
     let lockup_args = LockupArgs {
         unix_timestamp: lockup_checked_args.unix_timestamp,
