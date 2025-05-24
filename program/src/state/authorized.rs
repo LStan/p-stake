@@ -1,6 +1,4 @@
-use pinocchio::{pubkey::Pubkey, sysvars::clock::Clock};
-
-use crate::error::InstructionError;
+use pinocchio::{program_error::ProgramError, pubkey::Pubkey, sysvars::clock::Clock};
 
 use super::Lockup;
 
@@ -30,12 +28,12 @@ impl Authorized {
         new_authorized: &Pubkey,
         stake_authorize: StakeAuthorize,
         lockup_custodian_args: (&Lockup, &Clock, Option<&Pubkey>),
-    ) -> Result<(), InstructionError> {
+    ) -> Result<(), ProgramError> {
         match stake_authorize {
             StakeAuthorize::Staker => {
                 // Allow either the staker or the withdrawer to change the staker key
                 if !signer_args.has_staker_signer && !signer_args.has_withdrawer_signer {
-                    return Err(InstructionError::MissingRequiredSignature);
+                    return Err(ProgramError::MissingRequiredSignature);
                 }
                 self.staker = *new_authorized
             }
@@ -44,22 +42,22 @@ impl Authorized {
                 if lockup.is_in_force(clock, None) {
                     match custodian {
                         None => {
-                            // TODO check error type
-                            return Err(InstructionError::Custom(7));
+                            // return Err(StakeError::CustodianMissing.into());
+                            return Err(ProgramError::Custom(7));
                         }
                         Some(custodian) => {
                             // TODO: check this:
                             // custodian is always a signer if not None
 
                             if lockup.is_in_force(clock, Some(custodian)) {
-                                // TODO check error type
-                                return Err(InstructionError::Custom(1));
+                                // return Err(StakeError::LockupInForce.into());
+                                return Err(ProgramError::Custom(1));
                             }
                         }
                     }
                 }
                 if !signer_args.has_withdrawer_signer {
-                    return Err(InstructionError::MissingRequiredSignature);
+                    return Err(ProgramError::MissingRequiredSignature);
                 }
                 self.withdrawer = *new_authorized
             }

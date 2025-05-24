@@ -4,7 +4,6 @@ use pinocchio::{
 };
 
 use crate::{
-    error::to_program_error,
     pinocchio_add::{clock, pubkey::create_with_seed},
     state::{
         get_stake_state, try_get_stake_state_mut, AuthorizeSignerArgs, StakeAuthorize, StakeStateV2,
@@ -316,24 +315,18 @@ fn do_authorize(
 ) -> ProgramResult {
     let mut stake_account = try_get_stake_state_mut(stake_account_info)?;
     match &mut *stake_account {
-        StakeStateV2::Initialized(meta) => meta
-            .authorized
-            .authorize(
-                signers_args,
-                new_authority,
-                authority_type,
-                (&meta.lockup, clock, custodian),
-            )
-            .map_err(to_program_error),
-        StakeStateV2::Stake(meta, _stake, _stake_flags) => meta
-            .authorized
-            .authorize(
-                signers_args,
-                new_authority,
-                authority_type,
-                (&meta.lockup, clock, custodian),
-            )
-            .map_err(to_program_error),
+        StakeStateV2::Initialized(meta) => meta.authorized.authorize(
+            signers_args,
+            new_authority,
+            authority_type,
+            (&meta.lockup, clock, custodian),
+        ),
+        StakeStateV2::Stake(meta, _stake, _stake_flags) => meta.authorized.authorize(
+            signers_args,
+            new_authority,
+            authority_type,
+            (&meta.lockup, clock, custodian),
+        ),
         _ => Err(ProgramError::InvalidAccountData), // TODO: probably unreachable
     }
 }

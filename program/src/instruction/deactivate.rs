@@ -1,7 +1,6 @@
 use pinocchio::{account_info::AccountInfo, program_error::ProgramError, ProgramResult};
 
 use crate::{
-    error::{to_program_error, InstructionError},
     pinocchio_add::clock,
     state::{try_get_stake_state_mut, StakeStateV2},
 };
@@ -25,7 +24,7 @@ pub fn process_deactivate(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResu
                 }
             }
             if !has_signer {
-                return Err(InstructionError::MissingRequiredSignature).map_err(to_program_error);
+                return Err(ProgramError::MissingRequiredSignature);
             }
 
             stake.deactivate(clock.epoch.into())?;

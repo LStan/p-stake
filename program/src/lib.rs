@@ -2,7 +2,6 @@
 
 mod entrypoint;
 
-pub mod error;
 pub mod instruction;
 pub mod pinocchio_add;
 pub mod state;

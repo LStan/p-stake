@@ -6,12 +6,9 @@ use pinocchio::{
     ProgramResult,
 };
 
-use crate::{
-    error::to_program_error,
-    state::{
-        get_stake_state, try_get_stake_state_mut, Epoch, SetLockupSignerArgs, StakeStateV2,
-        UnixTimestamp,
-    },
+use crate::state::{
+    get_stake_state, try_get_stake_state_mut, Epoch, SetLockupSignerArgs, StakeStateV2,
+    UnixTimestamp,
 };
 
 #[cfg(not(test))]
@@ -246,12 +243,10 @@ fn do_set_lookup(
 ) -> ProgramResult {
     let mut stake_account = try_get_stake_state_mut(stake_account_info)?;
     match &mut *stake_account {
-        StakeStateV2::Initialized(meta) => meta
-            .set_lockup(lockup, signer_args, clock)
-            .map_err(to_program_error),
-        StakeStateV2::Stake(meta, _stake, _stake_flags) => meta
-            .set_lockup(lockup, signer_args, clock)
-            .map_err(to_program_error),
+        StakeStateV2::Initialized(meta) => meta.set_lockup(lockup, signer_args, clock),
+        StakeStateV2::Stake(meta, _stake, _stake_flags) => {
+            meta.set_lockup(lockup, signer_args, clock)
+        }
         _ => Err(ProgramError::InvalidAccountData),
     }
 }
