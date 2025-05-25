@@ -174,8 +174,8 @@ pub fn process_authorize_with_seed(accounts: &[AccountInfo], data: &[u8]) -> Pro
     let stake_or_withdraw_auth = if stake_or_withdraw_authority_base_info.is_signer() {
         Some(create_with_seed(
             stake_or_withdraw_authority_base_info.key(),
-            &authorize_args.authority_seed,
-            &authorize_args.authority_owner,
+            authorize_args.authority_seed,
+            authorize_args.authority_owner,
         )?)
     } else {
         None
@@ -191,7 +191,7 @@ pub fn process_authorize_with_seed(accounts: &[AccountInfo], data: &[u8]) -> Pro
     do_authorize(
         stake_account_info,
         signers_args,
-        &authorize_args.new_authority,
+        authorize_args.new_authority,
         authorize_args.authority_type,
         custodian,
         clock,
@@ -279,8 +279,8 @@ pub fn process_authorize_checked_with_seed(accounts: &[AccountInfo], data: &[u8]
     let stake_or_withdraw_auth = if old_stake_or_withdraw_authority_base_info.is_signer() {
         Some(create_with_seed(
             old_stake_or_withdraw_authority_base_info.key(),
-            &authorize_args.authority_seed,
-            &authorize_args.authority_owner,
+            authorize_args.authority_seed,
+            authorize_args.authority_owner,
         )?)
     } else {
         None

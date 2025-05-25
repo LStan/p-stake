@@ -25,9 +25,9 @@ pub fn process_merge(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
     #[cfg(feature = "logging")]
     pinocchio::msg!("Checking if destination stake is mergeable");
     let destination_merge_kind = MergeKind::get_if_mergeable(
-        &*destination_stake,
+        &destination_stake,
         destination_stake_account_info.lamports(),
-        &*clock,
+        &clock,
         stake_history,
     )?;
 
@@ -39,15 +39,15 @@ pub fn process_merge(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
     #[cfg(feature = "logging")]
     pinocchio::msg!("Checking if source stake is mergeable");
     let source_merge_kind = MergeKind::get_if_mergeable(
-        &*source_stake,
+        &source_stake,
         source_stake_account_info.lamports(),
-        &*clock,
+        &clock,
         stake_history,
     )?;
 
     #[cfg(feature = "logging")]
     pinocchio::msg!("Merging stake accounts");
-    if let Some(merged_state) = destination_merge_kind.merge(source_merge_kind, &*clock)? {
+    if let Some(merged_state) = destination_merge_kind.merge(source_merge_kind, &clock)? {
         // set_stake_state(destination_stake_account_info, &merged_state)?;
         *destination_stake = merged_state;
     }
@@ -70,10 +70,8 @@ pub fn process_merge(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
 fn check_signers(accounts: &[AccountInfo], meta: &Meta) -> Result<(), ProgramError> {
     let mut has_signer = false;
     for account in accounts {
-        if account.is_signer() {
-            if meta.authorized.staker == *account.key() {
-                has_signer = true;
-            }
+        if account.is_signer() && meta.authorized.staker == *account.key() {
+            has_signer = true;
         }
     }
     if !has_signer {

@@ -86,11 +86,9 @@ fn do_initialize(
                 });
                 Ok(())
             } else {
-                return Err(ProgramError::InsufficientFunds);
+                Err(ProgramError::InsufficientFunds)
             }
         }
-        _ => {
-            return Err(ProgramError::InvalidAccountData);
-        }
+        _ => Err(ProgramError::InvalidAccountData),
     }
 }

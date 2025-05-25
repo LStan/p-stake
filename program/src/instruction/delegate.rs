@@ -30,7 +30,7 @@ pub fn process_delegate(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult
         StakeStateV2::Initialized(meta) => {
             check_signers(accounts, meta)?;
 
-            let stake_amount = validate_delegated_amount(stake_account_info, &meta)?;
+            let stake_amount = validate_delegated_amount(stake_account_info, meta)?;
 
             let stake = Stake {
                 delegation: Delegation::new(
@@ -47,7 +47,7 @@ pub fn process_delegate(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult
         StakeStateV2::Stake(meta, stake, _flags) => {
             check_signers(accounts, meta)?;
 
-            let stake_amount = validate_delegated_amount(stake_account_info, &meta)?;
+            let stake_amount = validate_delegated_amount(stake_account_info, meta)?;
 
             redelegate_stake(
                 stake,
@@ -129,10 +129,8 @@ fn redelegate_stake(
 fn check_signers(accounts: &[AccountInfo], meta: &Meta) -> Result<(), ProgramError> {
     let mut has_signer = false;
     for account in accounts {
-        if account.is_signer() {
-            if meta.authorized.staker == *account.key() {
-                has_signer = true;
-            }
+        if account.is_signer() && meta.authorized.staker == *account.key() {
+            has_signer = true;
         }
     }
     if !has_signer {

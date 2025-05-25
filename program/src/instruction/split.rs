@@ -186,10 +186,8 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
 fn check_signers(accounts: &[AccountInfo], meta: &Meta) -> Result<(), ProgramError> {
     let mut has_signer = false;
     for account in accounts {
-        if account.is_signer() {
-            if meta.authorized.staker == *account.key() {
-                has_signer = true;
-            }
+        if account.is_signer() && meta.authorized.staker == *account.key() {
+            has_signer = true;
         }
     }
     if !has_signer {

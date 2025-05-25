@@ -101,6 +101,9 @@ impl StakeStateV2 {
         &*(bytes.as_ptr() as *const Self)
     }
 
+    /// # Safety
+    ///
+    /// The caller must ensure that `bytes` contains a valid representation of `StakeStateV2`.
     #[inline(always)]
     pub unsafe fn from_bytes_mut(bytes: &mut [u8]) -> &mut Self {
         &mut *(bytes.as_mut_ptr() as *mut Self)

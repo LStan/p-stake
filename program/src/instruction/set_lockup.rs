@@ -119,7 +119,7 @@ impl LockupArgs {
                 }
                 Ok(unsafe { *(data.as_ptr() as *const Self) })
             }
-            _ => return Err(ProgramError::InvalidInstructionData),
+            _ => Err(ProgramError::InvalidInstructionData),
         }
     }
 }
@@ -179,7 +179,7 @@ impl LockupCheckedArgs {
                 }
                 Ok(unsafe { *(data.as_ptr() as *const Self) })
             }
-            _ => return Err(ProgramError::InvalidInstructionData),
+            _ => Err(ProgramError::InvalidInstructionData),
         }
     }
 }

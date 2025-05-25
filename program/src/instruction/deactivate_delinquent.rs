@@ -25,7 +25,7 @@ pub fn process_deactivate_delinquent(accounts: &[AccountInfo], _data: &[u8]) -> 
     // let delinquent_vote_state = get_vote_state(delinquent_vote_account_info)?;
     let delinquent_last_epoch = get_last_epoch(delinquent_vote_account_info)?;
 
-    if !acceptable_reference_epoch_credits(&reference_vote_account_info, clock.epoch)? {
+    if !acceptable_reference_epoch_credits(reference_vote_account_info, clock.epoch)? {
         // return Err(StakeError::InsufficientReferenceVotes.into());
         return Err(ProgramError::Custom(9));
     }

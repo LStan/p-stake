@@ -2,7 +2,10 @@ use pinocchio::{program_error::ProgramError, pubkey::Pubkey};
 
 /// Handler for retrieving a slice of sysvar data from the `sol_get_sysvar`
 /// syscall.
-/// SAFETY: `dst` must be large enough to hold `length` bytes.
+///
+/// # Safety
+///
+/// `dst` must be large enough to hold `length` bytes.
 #[inline]
 pub unsafe fn get_sysvar_unchecked(
     dst: &mut [u8],
