@@ -57,7 +57,7 @@ impl StakeStateV2 {
     }
 
     #[inline]
-    pub fn try_from_account_info_mut(
+    pub fn from_account_info_mut(
         account_info: &AccountInfo,
     ) -> Result<RefMut<StakeStateV2>, ProgramError> {
         if account_info.data_len() < Self::size_of() {

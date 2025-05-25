@@ -2,7 +2,7 @@ use pinocchio::{
     account_info::AccountInfo, program_error::ProgramError, sysvars::rent::Rent, ProgramResult,
 };
 
-use crate::state::{try_get_stake_state_mut, Authorized, Lockup, Meta, StakeStateV2};
+use crate::state::{get_stake_state_mut, Authorized, Lockup, Meta, StakeStateV2};
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -73,7 +73,7 @@ fn do_initialize(
         return Err(ProgramError::InvalidAccountData);
     }
     let mut stake_account: pinocchio::account_info::RefMut<'_, StakeStateV2> =
-        try_get_stake_state_mut(stake_account_info)?;
+        get_stake_state_mut(stake_account_info)?;
 
     match &mut *stake_account {
         StakeStateV2::Uninitialized => {

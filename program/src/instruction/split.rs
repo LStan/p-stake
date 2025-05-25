@@ -6,7 +6,7 @@ use pinocchio::{
 };
 
 use crate::{
-    state::{get_stake_state, try_get_stake_state_mut, Meta, StakeHistorySysvar, StakeStateV2},
+    state::{get_stake_state, get_stake_state_mut, Meta, StakeHistorySysvar, StakeStateV2},
     PERPETUAL_NEW_WARMUP_COOLDOWN_RATE_EPOCH,
 };
 
@@ -41,7 +41,7 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
         }
     }
 
-    let mut source_stake = try_get_stake_state_mut(source_stake_account_info)?;
+    let mut source_stake = get_stake_state_mut(source_stake_account_info)?;
 
     let source_lamport_balance = source_stake_account_info.lamports();
     let destination_lamport_balance = destination_stake_account_info.lamports();
@@ -131,7 +131,7 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
 
             // TODO: use unsafe from_bytes_mut here because all checks were done above
             let mut destanation_stake =
-                StakeStateV2::try_from_account_info_mut(destination_stake_account_info)?;
+                StakeStateV2::from_account_info_mut(destination_stake_account_info)?;
 
             *destanation_stake =
                 StakeStateV2::Stake(destination_meta, destination_stake, stake_flags.clone());
@@ -156,7 +156,7 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
 
             // TODO: use unsafe from_bytes_mut here because all checks were done above
             let mut destanation_stake =
-                StakeStateV2::try_from_account_info_mut(destination_stake_account_info)?;
+                StakeStateV2::from_account_info_mut(destination_stake_account_info)?;
 
             *destanation_stake = StakeStateV2::Initialized(destination_meta);
         }

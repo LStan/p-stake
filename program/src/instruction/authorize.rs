@@ -6,7 +6,7 @@ use pinocchio::{
 use crate::{
     pinocchio_add::{clock, pubkey::create_with_seed},
     state::{
-        get_stake_state, try_get_stake_state_mut, AuthorizeSignerArgs, StakeAuthorize, StakeStateV2,
+        get_stake_state, get_stake_state_mut, AuthorizeSignerArgs, StakeAuthorize, StakeStateV2,
     },
 };
 
@@ -313,7 +313,7 @@ fn do_authorize(
     custodian: Option<&Pubkey>,
     clock: &Clock,
 ) -> ProgramResult {
-    let mut stake_account = try_get_stake_state_mut(stake_account_info)?;
+    let mut stake_account = get_stake_state_mut(stake_account_info)?;
     match &mut *stake_account {
         StakeStateV2::Initialized(meta) => meta.authorized.authorize(
             signers_args,

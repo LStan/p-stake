@@ -2,7 +2,7 @@ use pinocchio::{account_info::AccountInfo, program_error::ProgramError, ProgramR
 
 use crate::{
     pinocchio_add::clock,
-    state::{try_get_stake_state_mut, StakeStateV2},
+    state::{get_stake_state_mut, StakeStateV2},
 };
 
 pub fn process_deactivate(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
@@ -12,7 +12,7 @@ pub fn process_deactivate(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResu
 
     let clock = &clock::from_account_info(clock_info)?;
 
-    let mut stake_account = try_get_stake_state_mut(stake_account_info)?;
+    let mut stake_account = get_stake_state_mut(stake_account_info)?;
     match &mut *stake_account {
         StakeStateV2::Stake(meta, stake, _stake_flags) => {
             let mut has_signer = false;

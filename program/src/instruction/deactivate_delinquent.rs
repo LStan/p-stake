@@ -9,7 +9,7 @@ use pinocchio::{
 };
 
 use crate::state::{
-    acceptable_reference_epoch_credits, get_last_epoch, try_get_stake_state_mut, StakeStateV2,
+    acceptable_reference_epoch_credits, get_last_epoch, get_stake_state_mut, StakeStateV2,
     MINIMUM_DELINQUENT_EPOCHS_FOR_DEACTIVATION,
 };
 
@@ -30,7 +30,7 @@ pub fn process_deactivate_delinquent(accounts: &[AccountInfo], _data: &[u8]) -> 
         return Err(ProgramError::Custom(9));
     }
 
-    let mut stake_account = try_get_stake_state_mut(stake_account_info)?;
+    let mut stake_account = get_stake_state_mut(stake_account_info)?;
 
     if let StakeStateV2::Stake(_meta, stake, _stake_flags) = &mut *stake_account {
         if stake.delegation.voter_pubkey != *delinquent_vote_account_info.key() {

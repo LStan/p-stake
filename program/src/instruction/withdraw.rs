@@ -2,7 +2,7 @@ use pinocchio::{account_info::AccountInfo, program_error::ProgramError, ProgramR
 
 use crate::{
     pinocchio_add::clock,
-    state::{try_get_stake_state_mut, Lockup, StakeHistorySysvar, StakeStateV2},
+    state::{get_stake_state_mut, Lockup, StakeHistorySysvar, StakeStateV2},
     PERPETUAL_NEW_WARMUP_COOLDOWN_RATE_EPOCH,
 };
 
@@ -42,7 +42,7 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
 
     let stake_history = &StakeHistorySysvar(clock.epoch);
 
-    let mut stake_account = try_get_stake_state_mut(source_stake_account_info)?;
+    let mut stake_account = get_stake_state_mut(source_stake_account_info)?;
 
     // TODO: lockup copy happens here, but could be avoided using a ref or inline the is_in_force check
     let (lockup, reserve, is_staked) = match &*stake_account {

@@ -6,8 +6,8 @@ use pinocchio::{
 use crate::{
     pinocchio_add::clock as clock_add,
     state::{
-        get_credits, try_get_stake_state_mut, Delegation, Meta, Stake, StakeFlags,
-        StakeHistorySysvar, StakeStateV2,
+        get_credits, get_stake_state_mut, Delegation, Meta, Stake, StakeFlags, StakeHistorySysvar,
+        StakeStateV2,
     },
     PERPETUAL_NEW_WARMUP_COOLDOWN_RATE_EPOCH,
 };
@@ -24,7 +24,7 @@ pub fn process_delegate(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult
 
     let credits = get_credits(vote_account_info)?;
 
-    let mut source_stake = try_get_stake_state_mut(stake_account_info)?;
+    let mut source_stake = get_stake_state_mut(stake_account_info)?;
 
     match &mut *source_stake {
         StakeStateV2::Initialized(meta) => {

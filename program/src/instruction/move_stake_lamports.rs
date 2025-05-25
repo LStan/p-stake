@@ -6,8 +6,8 @@ use pinocchio::{
 };
 
 use crate::state::{
-    get_stake_state, merge_delegation_stake_and_credits_observed, try_get_stake_state_mut,
-    MergeKind, StakeFlags, StakeHistorySysvar, StakeStateV2,
+    get_stake_state, get_stake_state_mut, merge_delegation_stake_and_credits_observed, MergeKind,
+    StakeFlags, StakeHistorySysvar, StakeStateV2,
 };
 
 use super::relocate_lamports;
@@ -105,7 +105,7 @@ pub fn process_move_stake(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         return Err(ProgramError::InvalidArgument);
     }
 
-    let mut destanation_stake_account = try_get_stake_state_mut(destination_stake_account_info)?;
+    let mut destanation_stake_account = get_stake_state_mut(destination_stake_account_info)?;
 
     // destination must be fully active or fully inactive
     let destination_meta_rent_exempt_reserve = match destination_merge_kind {
@@ -165,7 +165,7 @@ pub fn process_move_stake(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         _ => return Err(ProgramError::InvalidAccountData),
     };
 
-    let mut source_stake_account = try_get_stake_state_mut(source_stake_account_info)?;
+    let mut source_stake_account = get_stake_state_mut(source_stake_account_info)?;
 
     let source_meta_rent_exempt_reserve = source_meta.rent_exempt_reserve;
 

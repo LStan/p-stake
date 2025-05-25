@@ -56,12 +56,12 @@ pub unsafe fn get_stake_state_unchecked(
     StakeStateV2::from_account_info_unchecked(stake_account_info)
 }
 
-pub fn try_get_stake_state_mut(
+pub fn get_stake_state_mut(
     stake_account_info: &AccountInfo,
 ) -> Result<RefMut<StakeStateV2>, ProgramError> {
     if !stake_account_info.is_owned_by(&crate::ID) {
         return Err(ProgramError::InvalidAccountOwner);
     }
 
-    StakeStateV2::try_from_account_info_mut(stake_account_info)
+    StakeStateV2::from_account_info_mut(stake_account_info)
 }
