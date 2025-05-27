@@ -9,7 +9,7 @@ use crate::PERPETUAL_NEW_WARMUP_COOLDOWN_RATE_EPOCH;
 use super::{Delegation, Meta, Stake, StakeFlags, StakeHistorySysvar, StakeStateV2};
 
 #[derive(Debug, PartialEq)]
-// TODO: probaby maybe optimized using references and/or change to struct
+// TODO: probaby can be optimized using references and/or change to struct
 pub enum MergeKind {
     Inactive(Meta, u64, StakeFlags),
     ActivationEpoch(Meta, Stake, StakeFlags),

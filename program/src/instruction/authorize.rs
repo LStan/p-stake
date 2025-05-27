@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 struct AuthorizeArgs {
     new_authority: Pubkey,
     authority_type: StakeAuthorize,
@@ -19,7 +19,7 @@ struct AuthorizeArgs {
 
 impl AuthorizeArgs {
     #[inline(always)]
-    fn from_data(data: &[u8]) -> Result<AuthorizeArgs, ProgramError> {
+    fn from_data(data: &[u8]) -> Result<&AuthorizeArgs, ProgramError> {
         if data.len() < core::mem::size_of::<AuthorizeArgs>() {
             return Err(ProgramError::InvalidInstructionData);
         }
@@ -27,7 +27,7 @@ impl AuthorizeArgs {
         if data[32] > 1 {
             return Err(ProgramError::InvalidInstructionData);
         }
-        Ok(unsafe { *(data.as_ptr() as *const Self) })
+        Ok(unsafe { &*(data.as_ptr() as *const Self) })
     }
 }
 
@@ -327,7 +327,7 @@ fn do_authorize(
             authority_type,
             (&meta.lockup, clock, custodian),
         ),
-        _ => Err(ProgramError::InvalidAccountData), // TODO: probably unreachable
+        _ => Err(ProgramError::InvalidAccountData), // unreachable, but unreachable leads to more CUs
     }
 }
 
@@ -340,7 +340,6 @@ fn get_authorize_signer_args(
     let mut has_staker_signer = false;
     let mut has_withdrawer_signer = false;
 
-    // TODO: check difference between * + ref and &*
     match *stake_account {
         StakeStateV2::Initialized(ref meta) | StakeStateV2::Stake(ref meta, _, _) => {
             for account in accounts {

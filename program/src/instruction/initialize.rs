@@ -5,19 +5,18 @@ use pinocchio::{
 use crate::state::{get_stake_state_mut, Authorized, Lockup, Meta, StakeStateV2};
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 struct InitializeArgs {
     authorized: Authorized,
     lockup: Lockup,
 }
 
 impl InitializeArgs {
-    // TODO: optimize to avoid extra copy and return ref
-    fn from_data(data: &[u8]) -> Result<InitializeArgs, ProgramError> {
+    fn from_data(data: &[u8]) -> Result<&InitializeArgs, ProgramError> {
         if data.len() != core::mem::size_of::<InitializeArgs>() {
             return Err(ProgramError::InvalidInstructionData);
         }
-        Ok(unsafe { *(data.as_ptr() as *const Self) })
+        Ok(unsafe { &*(data.as_ptr() as *const Self) })
     }
 }
 

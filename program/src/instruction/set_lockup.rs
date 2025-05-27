@@ -52,7 +52,7 @@ impl LockupArgs {
                 if data[0] == 1 {
                     Ok(LockupArgs {
                         unix_timestamp: Some(unsafe {
-                            *(data[1..=8].as_ptr() as *const UnixTimestamp)
+                            *(data.as_ptr().add(1) as *const UnixTimestamp)
                         }),
                         epoch: None,
                         custodian: None,
@@ -60,7 +60,7 @@ impl LockupArgs {
                 } else {
                     Ok(LockupArgs {
                         unix_timestamp: None,
-                        epoch: Some(unsafe { *(data[2..=9].as_ptr() as *const Epoch) }),
+                        epoch: Some(unsafe { *(data.as_ptr().add(2) as *const Epoch) }),
                         custodian: None,
                     })
                 }
@@ -72,9 +72,9 @@ impl LockupArgs {
                 }
                 Ok(LockupArgs {
                     unix_timestamp: Some(unsafe {
-                        *(data[1..=8].as_ptr() as *const UnixTimestamp)
+                        *(data.as_ptr().add(1) as *const UnixTimestamp)
                     }),
-                    epoch: Some(unsafe { *(data[10..=17].as_ptr() as *const Epoch) }),
+                    epoch: Some(unsafe { *(data.as_ptr().add(10) as *const Epoch) }),
                     custodian: None,
                 })
             }
@@ -86,7 +86,7 @@ impl LockupArgs {
                 Ok(LockupArgs {
                     unix_timestamp: None,
                     epoch: None,
-                    custodian: Some(unsafe { *(data[3..=34].as_ptr() as *const Pubkey) }),
+                    custodian: Some(unsafe { *(data.as_ptr().add(3) as *const Pubkey) }),
                 })
             }
             // (custodian - some, either unix_timestamp or epoch - none): 9 + 1 + 33
@@ -99,16 +99,16 @@ impl LockupArgs {
                 if data[0] == 1 {
                     Ok(LockupArgs {
                         unix_timestamp: Some(unsafe {
-                            *(data[1..=8].as_ptr() as *const UnixTimestamp)
+                            *(data.as_ptr().add(1) as *const UnixTimestamp)
                         }),
                         epoch: None,
-                        custodian: Some(unsafe { *(data[11..=42].as_ptr() as *const Pubkey) }),
+                        custodian: Some(unsafe { *(data.as_ptr().add(11) as *const Pubkey) }),
                     })
                 } else {
                     Ok(LockupArgs {
                         unix_timestamp: None,
-                        epoch: Some(unsafe { *(data[2..=9].as_ptr() as *const Epoch) }),
-                        custodian: Some(unsafe { *(data[11..=42].as_ptr() as *const Pubkey) }),
+                        epoch: Some(unsafe { *(data.as_ptr().add(2) as *const Epoch) }),
+                        custodian: Some(unsafe { *(data.as_ptr().add(11) as *const Pubkey) }),
                     })
                 }
             }
@@ -118,6 +118,13 @@ impl LockupArgs {
                     return Err(ProgramError::InvalidInstructionData);
                 }
                 Ok(unsafe { *(data.as_ptr() as *const Self) })
+                // Ok(LockupArgs {
+                //     unix_timestamp: Some(unsafe {
+                //         *(data.as_ptr().add(1) as *const UnixTimestamp)
+                //     }),
+                //     epoch: Some(unsafe { *(data.as_ptr().add(10) as *const Epoch) }),
+                //     custodian: Some(unsafe { *(data.as_ptr().add(19) as *const Pubkey) }),
+                // })
             }
             _ => Err(ProgramError::InvalidInstructionData),
         }
@@ -161,14 +168,14 @@ impl LockupCheckedArgs {
                 if data[0] == 1 {
                     Ok(LockupCheckedArgs {
                         unix_timestamp: Some(unsafe {
-                            *(data[1..=8].as_ptr() as *const UnixTimestamp)
+                            *(data.as_ptr().add(1) as *const UnixTimestamp)
                         }),
                         epoch: None,
                     })
                 } else {
                     Ok(LockupCheckedArgs {
                         unix_timestamp: None,
-                        epoch: Some(unsafe { *(data[2..=9].as_ptr() as *const Epoch) }),
+                        epoch: Some(unsafe { *(data.as_ptr().add(2) as *const Epoch) }),
                     })
                 }
             }
@@ -283,11 +290,19 @@ fn get_set_lockup_signer_args(
 
 #[cfg(test)]
 mod test {
+    use crate::state::{Epoch, UnixTimestamp};
+
     use super::{LockupArgs, LockupCheckedArgs};
     use bincode::serialize;
 
     #[test]
     fn test_instruction_data_lockup() {
+        let unix_timestamp: UnixTimestamp = 3609733389592650838i64.into();
+        let epoch: Epoch = 9464321479845648u64.into();
+        let custodian = [
+            13, 54, 98, 123, 59, 67, 165, 78, 03, 12, 23, 45, 67, 89, 01, 02, 03, 04, 05, 06, 07,
+            08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+        ];
         let args_arr = [
             LockupArgs {
                 unix_timestamp: None,
@@ -295,51 +310,39 @@ mod test {
                 custodian: None,
             },
             LockupArgs {
-                unix_timestamp: Some(3609733389592650838i64.into()),
+                unix_timestamp: Some(unix_timestamp),
                 epoch: None,
                 custodian: None,
             },
             LockupArgs {
                 unix_timestamp: None,
-                epoch: Some(9464321479845648u64.into()),
+                epoch: Some(epoch),
                 custodian: None,
             },
             LockupArgs {
                 unix_timestamp: None,
                 epoch: None,
-                custodian: Some([
-                    13, 54, 98, 123, 59, 67, 165, 78, 03, 12, 23, 45, 67, 89, 01, 02, 03, 04, 05,
-                    06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                ]),
+                custodian: Some(custodian),
             },
             LockupArgs {
-                unix_timestamp: Some(3609733389592650838i64.into()),
-                epoch: Some(9464321479845648u64.into()),
+                unix_timestamp: Some(unix_timestamp),
+                epoch: Some(epoch),
                 custodian: None,
             },
             LockupArgs {
-                unix_timestamp: Some(3609733389592650838i64.into()),
+                unix_timestamp: Some(unix_timestamp),
                 epoch: None,
-                custodian: Some([
-                    13, 54, 98, 123, 59, 67, 165, 78, 03, 12, 23, 45, 67, 89, 01, 02, 03, 04, 05,
-                    06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                ]),
+                custodian: Some(custodian),
             },
             LockupArgs {
                 unix_timestamp: None,
-                epoch: Some(9464321479845648u64.into()),
-                custodian: Some([
-                    13, 54, 98, 123, 59, 67, 165, 78, 03, 12, 23, 45, 67, 89, 01, 02, 03, 04, 05,
-                    06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                ]),
+                epoch: Some(epoch),
+                custodian: Some(custodian),
             },
             LockupArgs {
-                unix_timestamp: Some(3609733389592650838i64.into()),
-                epoch: Some(9464321479845648u64.into()),
-                custodian: Some([
-                    13, 54, 98, 123, 59, 67, 165, 78, 03, 12, 23, 45, 67, 89, 01, 02, 03, 04, 05,
-                    06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-                ]),
+                unix_timestamp: Some(unix_timestamp),
+                epoch: Some(epoch),
+                custodian: Some(custodian),
             },
         ];
 
@@ -353,22 +356,25 @@ mod test {
 
     #[test]
     fn test_instruction_data_lockup_checked() {
+        let unix_timestamp: UnixTimestamp = 3609733389592650838i64.into();
+        let epoch: Epoch = 9464321479845648u64.into();
+
         let args_arr = [
             LockupCheckedArgs {
                 unix_timestamp: None,
                 epoch: None,
             },
             LockupCheckedArgs {
-                unix_timestamp: Some(3609733389592650838i64.into()),
+                unix_timestamp: Some(unix_timestamp),
                 epoch: None,
             },
             LockupCheckedArgs {
                 unix_timestamp: None,
-                epoch: Some(9464321479845648u64.into()),
+                epoch: Some(epoch),
             },
             LockupCheckedArgs {
-                unix_timestamp: Some(3609733389592650838i64.into()),
-                epoch: Some(9464321479845648u64.into()),
+                unix_timestamp: Some(unix_timestamp),
+                epoch: Some(epoch),
             },
         ];
 
