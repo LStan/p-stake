@@ -25,9 +25,13 @@ pub fn process_move_lamports(accounts: &[AccountInfo], data: &[u8]) -> ProgramRe
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
+    // must move something
+    if lamports == 0 {
+        return Err(ProgramError::InvalidArgument);
+    }
+
     let (source_merge_kind, _) = move_stake_or_lamports_shared_checks(
         source_stake_account_info,
-        lamports,
         destination_stake_account_info,
         stake_authority_info,
     )?;
@@ -69,9 +73,13 @@ pub fn process_move_stake(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
         return Err(ProgramError::NotEnoughAccountKeys);
     };
 
+    // must move something
+    if lamports == 0 {
+        return Err(ProgramError::InvalidArgument);
+    }
+
     let (source_merge_kind, destination_merge_kind) = move_stake_or_lamports_shared_checks(
         source_stake_account_info,
-        lamports,
         destination_stake_account_info,
         stake_authority_info,
     )?;
@@ -200,10 +208,8 @@ pub fn process_move_stake(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
     Ok(())
 }
 
-// TODO: lamports are used only for one check and can be removed
 fn move_stake_or_lamports_shared_checks(
     source_stake_account_info: &AccountInfo,
-    lamports: u64,
     destination_stake_account_info: &AccountInfo,
     stake_authority_info: &AccountInfo,
 ) -> Result<(MergeKind, MergeKind), ProgramError> {
@@ -222,11 +228,6 @@ fn move_stake_or_lamports_shared_checks(
     // we check explicitly to avoid any possibility of a successful no-op that never attempts to write
     if !source_stake_account_info.is_writable() || !destination_stake_account_info.is_writable() {
         return Err(ProgramError::InvalidInstructionData);
-    }
-
-    // must move something
-    if lamports == 0 {
-        return Err(ProgramError::InvalidArgument);
     }
 
     let clock = Clock::get()?;

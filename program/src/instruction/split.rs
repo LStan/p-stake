@@ -129,9 +129,13 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
             destination_meta.rent_exempt_reserve =
                 validated_split_info.destination_rent_exempt_reserve.into();
 
-            // TODO: use unsafe from_bytes_mut here because all checks were done above
-            let mut destanation_stake =
-                StakeStateV2::from_account_info_mut(destination_stake_account_info)?;
+            // Safety: all checks were done above in get_stake_state,
+            // also destination_stake_account_info is not borrowed and not the same as source_stake_account_info
+            let destanation_stake = unsafe {
+                StakeStateV2::from_bytes_mut(
+                    destination_stake_account_info.borrow_mut_data_unchecked(),
+                )
+            };
 
             *destanation_stake =
                 StakeStateV2::Stake(destination_meta, destination_stake, stake_flags.clone());
@@ -154,9 +158,13 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
             destination_meta.rent_exempt_reserve =
                 validated_split_info.destination_rent_exempt_reserve.into();
 
-            // TODO: use unsafe from_bytes_mut here because all checks were done above
-            let mut destanation_stake =
-                StakeStateV2::from_account_info_mut(destination_stake_account_info)?;
+            // Safety: all checks were done above in get_stake_state,
+            // also destination_stake_account_info is not borrowed and not the same as source_stake_account_info
+            let destanation_stake = unsafe {
+                StakeStateV2::from_bytes_mut(
+                    destination_stake_account_info.borrow_mut_data_unchecked(),
+                )
+            };
 
             *destanation_stake = StakeStateV2::Initialized(destination_meta);
         }
@@ -181,7 +189,6 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     Ok(())
 }
 
-// TODO probably inline(always)
 #[inline]
 fn check_signers(accounts: &[AccountInfo], meta: &Meta) -> Result<(), ProgramError> {
     let mut has_signer = false;
@@ -201,7 +208,6 @@ struct ValidatedSplitInfo {
     pub destination_rent_exempt_reserve: u64,
 }
 
-// TODO probably inline
 fn validate_split_amount(
     source_lamports: u64,
     destination_lamports: u64,

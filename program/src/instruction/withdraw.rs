@@ -2,7 +2,7 @@ use pinocchio::{account_info::AccountInfo, program_error::ProgramError, ProgramR
 
 use crate::{
     pinocchio_add::clock,
-    state::{get_stake_state_mut, Lockup, StakeHistorySysvar, StakeStateV2},
+    state::{get_stake_state_mut, StakeHistorySysvar, StakeStateV2},
     PERPETUAL_NEW_WARMUP_COOLDOWN_RATE_EPOCH,
 };
 
@@ -44,8 +44,7 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
 
     let mut stake_account = get_stake_state_mut(source_stake_account_info)?;
 
-    // TODO: lockup copy happens here, but could be avoided using a ref or inline the is_in_force check
-    let (lockup, reserve, is_staked) = match &*stake_account {
+    let (reserve, is_staked) = match &*stake_account {
         StakeStateV2::Stake(meta, stake, _stake_flag) => {
             if let Some(custodian) = custodian {
                 if meta.authorized.withdrawer != *custodian
@@ -73,7 +72,15 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
             let staked_and_reserve = staked
                 .checked_add(meta.rent_exempt_reserve.into())
                 .ok_or(ProgramError::InsufficientFunds)?;
-            (meta.lockup, staked_and_reserve, staked != 0)
+
+            // verify that lockup has expired or that the withdrawal is signed by the
+            // custodian both epoch and unix_timestamp must have passed
+            if meta.lockup.is_in_force(clock, custodian) {
+                // StakeError::LockupInForce
+                return Err(ProgramError::Custom(1));
+            }
+
+            (staked_and_reserve, staked != 0)
         }
         StakeStateV2::Initialized(ref meta) => {
             if let Some(custodian) = custodian {
@@ -85,8 +92,15 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
             } else if meta.authorized.withdrawer != *withdraw_authority {
                 return Err(ProgramError::MissingRequiredSignature);
             }
+            // verify that lockup has expired or that the withdrawal is signed by the
+            // custodian both epoch and unix_timestamp must have passed
+            if meta.lockup.is_in_force(clock, custodian) {
+                // StakeError::LockupInForce
+                return Err(ProgramError::Custom(1));
+            }
+
             // stake accounts must have a balance >= rent_exempt_reserve
-            (meta.lockup, meta.rent_exempt_reserve.into(), false)
+            (meta.rent_exempt_reserve.into(), false)
         }
         StakeStateV2::Uninitialized => {
             if let Some(custodian) = custodian {
@@ -99,17 +113,10 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
                 return Err(ProgramError::MissingRequiredSignature);
             }
 
-            (Lockup::default(), 0, false) // no lockup, no restrictions
+            (0, false)
         }
         _ => return Err(ProgramError::InvalidAccountData),
     };
-
-    // verify that lockup has expired or that the withdrawal is signed by the
-    // custodian both epoch and unix_timestamp must have passed
-    if lockup.is_in_force(clock, custodian) {
-        // StakeError::LockupInForce
-        return Err(ProgramError::Custom(1));
-    }
 
     let stake_account_lamports = source_stake_account_info.lamports();
     if withdraw_lamports == stake_account_lamports {

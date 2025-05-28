@@ -65,7 +65,6 @@ pub fn process_merge(accounts: &[AccountInfo], _data: &[u8]) -> ProgramResult {
     Ok(())
 }
 
-// TODO probably inline(always)
 #[inline]
 fn check_signers(accounts: &[AccountInfo], meta: &Meta) -> Result<(), ProgramError> {
     let mut has_signer = false;

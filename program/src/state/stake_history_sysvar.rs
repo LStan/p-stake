@@ -37,7 +37,6 @@ impl StakeHistorySysvar {
             .checked_mul(EPOCH_AND_ENTRY_SERIALIZED_SIZE)?
             .checked_add(core::mem::size_of::<u64>() as u64)?;
 
-        // TODO: change to MaybeUninit
         let mut entry_buf = [0; EPOCH_AND_ENTRY_SERIALIZED_SIZE as usize];
         // SAFETY: the buffer is large enough
         let result = unsafe {
@@ -51,7 +50,6 @@ impl StakeHistorySysvar {
 
         match result {
             Ok(()) => {
-                // TODO: optimize
                 let entry_epoch = u64::from_le_bytes(entry_buf[0..8].try_into().unwrap());
                 let effective = u64::from_le_bytes(entry_buf[8..16].try_into().unwrap());
                 let activating = u64::from_le_bytes(entry_buf[16..24].try_into().unwrap());
