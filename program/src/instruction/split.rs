@@ -16,8 +16,7 @@ pub fn process_split(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
     if data.len() < 8 {
         return Err(ProgramError::InvalidInstructionData);
     }
-    // let split_lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
-    let split_lamports = unsafe { *(data.as_ptr() as *const u64) };
+    let split_lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
 
     let [source_stake_account_info, destination_stake_account_info, _remaining @ ..] = accounts
     else {

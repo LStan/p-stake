@@ -12,8 +12,7 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
     if data.len() < 8 {
         return Err(ProgramError::InvalidInstructionData);
     }
-    // let withdraw_lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
-    let withdraw_lamports = unsafe { *(data.as_ptr() as *const u64) };
+    let withdraw_lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
 
     let [source_stake_account_info, destination_info, clock_info, _stake_history_info, withdraw_authority_info, remaining @ ..] =
         accounts
@@ -82,7 +81,7 @@ pub fn process_withdraw(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult 
 
             (staked_and_reserve, staked != 0)
         }
-        StakeStateV2::Initialized(ref meta) => {
+        StakeStateV2::Initialized(meta) => {
             if let Some(custodian) = custodian {
                 if meta.authorized.withdrawer != *custodian
                     && meta.authorized.withdrawer != *withdraw_authority

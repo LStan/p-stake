@@ -6,11 +6,8 @@ use pinocchio::{
 
 use crate::{instruction, pinocchio_add::epoch_rewards::EpochRewards};
 
-// This is the entrypoint for the program.
 program_entrypoint!(process_instruction);
-//Do not allocate memory.
 no_allocator!();
-// Use the no_std panic handler.
 nostd_panic_handler!();
 
 #[inline(always)]
@@ -27,11 +24,6 @@ fn process_instruction(
     let (ix_disc, instruction_data) = instruction_data
         .split_first_chunk::<4>()
         .ok_or(ProgramError::InvalidInstructionData)?;
-
-    // Second variant, test CUs usage
-    // let (ix_disc, instruction_data) = instruction_data
-    //     .split_at_checked(4)
-    //     .ok_or(ProgramError::InvalidInstructionData)?;
 
     let instruction = &ix_disc[0];
 

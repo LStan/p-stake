@@ -16,8 +16,7 @@ pub fn process_move_lamports(accounts: &[AccountInfo], data: &[u8]) -> ProgramRe
     if data.len() < 8 {
         return Err(ProgramError::InvalidInstructionData);
     }
-    // let lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
-    let lamports = unsafe { *(data.as_ptr() as *const u64) };
+    let lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
 
     let [source_stake_account_info, destination_stake_account_info, stake_authority_info, _remaining @ ..] =
         accounts
@@ -64,8 +63,7 @@ pub fn process_move_stake(accounts: &[AccountInfo], data: &[u8]) -> ProgramResul
     if data.len() < 8 {
         return Err(ProgramError::InvalidInstructionData);
     }
-    // let lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
-    let lamports = unsafe { *(data.as_ptr() as *const u64) };
+    let lamports = u64::from_le_bytes(data[0..8].try_into().unwrap());
 
     let [source_stake_account_info, destination_stake_account_info, stake_authority_info, _remaining @ ..] =
         accounts
