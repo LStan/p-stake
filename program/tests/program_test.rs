@@ -1,7 +1,6 @@
 #![allow(clippy::arithmetic_side_effects)]
 
 use {
-    p_stake::id as p_stake_id,
     solana_program_test::*,
     solana_sdk::{
         account::Account as SolanaAccount,
@@ -11,25 +10,24 @@ use {
         pubkey::Pubkey,
         signature::{Keypair, Signer},
         signers::Signers,
-        stake::{
-            self,
-            instruction::{self as ixn, LockupArgs, StakeError},
-            state::{Authorized, Delegation, Lockup, Meta, Stake, StakeAuthorize, StakeStateV2},
-        },
-        system_instruction, system_program,
-        sysvar::{clock::Clock, stake_history::StakeHistory},
         transaction::{Transaction, TransactionError},
         vote::{
             instruction as vote_instruction,
             state::{VoteInit, VoteState, VoteStateVersions},
         },
     },
+    solana_sdk_ids::system_program,
+    solana_stake_interface::{
+        error::StakeError,
+        instruction::{self as ixn, LockupArgs},
+        program::id,
+        stake_history::StakeHistory,
+        state::{Authorized, Delegation, Lockup, Meta, Stake, StakeAuthorize, StakeStateV2},
+    },
+    solana_system_interface::instruction as system_instruction,
+    solana_sysvar::clock::Clock,
     test_case::{test_case, test_matrix},
 };
-
-fn id() -> Pubkey {
-    p_stake_id().into()
-}
 
 pub const USER_STARTING_LAMPORTS: u64 = 10_000_000_000_000; // 10k sol
 pub const NO_SIGNERS: &[Keypair] = &[];
@@ -190,7 +188,7 @@ pub async fn get_stake_account(
 
 pub async fn get_stake_account_rent(banks_client: &mut BanksClient) -> u64 {
     let rent = banks_client.get_rent().await.unwrap();
-    rent.minimum_balance(std::mem::size_of::<stake::state::StakeStateV2>())
+    rent.minimum_balance(std::mem::size_of::<StakeStateV2>())
 }
 
 pub async fn get_effective_stake(banks_client: &mut BanksClient, pubkey: &Pubkey) -> u64 {
@@ -210,7 +208,7 @@ pub async fn get_effective_stake(banks_client: &mut BanksClient, pubkey: &Pubkey
 
 async fn get_minimum_delegation(context: &mut ProgramTestContext) -> u64 {
     let transaction = Transaction::new_signed_with_payer(
-        &[stake::instruction::get_minimum_delegation()],
+        &[ixn::get_minimum_delegation()],
         Some(&context.payer.pubkey()),
         &[&context.payer],
         context.last_blockhash,
@@ -258,10 +256,10 @@ pub async fn create_independent_stake_account_with_lockup(
             &context.payer.pubkey(),
             &stake.pubkey(),
             lamports,
-            std::mem::size_of::<stake::state::StakeStateV2>() as u64,
+            std::mem::size_of::<StakeStateV2>() as u64,
             &id(),
         ),
-        stake::instruction::initialize(&stake.pubkey(), authorized, lockup),
+        ixn::initialize(&stake.pubkey(), authorized, lockup),
     ];
 
     let transaction = Transaction::new_signed_with_payer(

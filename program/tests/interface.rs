@@ -18,7 +18,6 @@ use {
             },
         },
         stake_history::StakeHistoryEntry,
-        system_program,
         sysvar::{
             clock::Clock, epoch_rewards::EpochRewards, epoch_schedule::EpochSchedule, rent::Rent,
             stake_history::StakeHistory, SysvarId,
@@ -28,6 +27,7 @@ use {
             state::{VoteState, VoteStateVersions},
         },
     },
+    solana_sdk_ids::system_program,
     std::{
         collections::{HashMap, HashSet},
         sync::LazyLock,

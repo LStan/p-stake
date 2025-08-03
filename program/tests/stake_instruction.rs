@@ -29,7 +29,6 @@ use {
             MINIMUM_DELINQUENT_EPOCHS_FOR_DEACTIVATION,
         },
         stake_history::{Epoch, StakeHistoryEntry},
-        system_program,
         sysvar::{
             clock::{self, Clock},
             epoch_rewards::{self, EpochRewards},
@@ -39,6 +38,7 @@ use {
             stake_history::{self, StakeHistory},
         },
     },
+    solana_sdk_ids::system_program,
     solana_vote_program::{
         self,
         vote_state::{self, VoteState, VoteStateVersions},
@@ -312,13 +312,21 @@ fn create_stake_history_from_delegations(
 mod config {
     #[allow(deprecated)]
     use {
-        solana_config_program::create_config_account,
-        solana_sdk::{account::AccountSharedData, stake::config::Config},
+        solana_account::{Account, AccountSharedData},
+        solana_config_interface::state::ConfigKeys,
+        solana_sdk::stake::config::Config,
     };
 
     #[allow(deprecated)]
     pub fn create_account(lamports: u64, config: &Config) -> AccountSharedData {
-        create_config_account(vec![], config, lamports)
+        let mut data = bincode::serialize(&ConfigKeys { keys: vec![] }).unwrap();
+        data.extend_from_slice(&bincode::serialize(config).unwrap());
+        AccountSharedData::from(Account {
+            lamports,
+            data,
+            owner: solana_config_interface::id(),
+            ..Account::default()
+        })
     }
 }
 
