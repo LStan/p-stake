@@ -25,6 +25,10 @@ fn process_instruction(
         .split_first_chunk::<4>()
         .ok_or(ProgramError::InvalidInstructionData)?;
 
+    if ix_disc[1..4] != [0u8; 3] {
+        return Err(ProgramError::InvalidInstructionData);
+    }
+
     let instruction = &ix_disc[0];
 
     let epoch_rewards_active = EpochRewards::get()

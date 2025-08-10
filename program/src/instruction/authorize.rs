@@ -20,13 +20,18 @@ struct AuthorizeArgs {
 impl AuthorizeArgs {
     #[inline(always)]
     fn from_data(data: &[u8]) -> Result<&AuthorizeArgs, ProgramError> {
-        if data.len() < core::mem::size_of::<AuthorizeArgs>() {
+        if data.len() < 32 + 4 {
             return Err(ProgramError::InvalidInstructionData);
         }
         // check authority type variants
         if data[32] > 1 {
             return Err(ProgramError::InvalidInstructionData);
         }
+
+        if data[33..36] != [0u8; 3] {
+            return Err(ProgramError::InvalidInstructionData);
+        }
+
         Ok(unsafe { &*(data.as_ptr() as *const Self) })
     }
 }
@@ -50,6 +55,10 @@ impl AuthorizeWithSeedArgs<'_> {
             return Err(ProgramError::InvalidInstructionData);
         }
 
+        if data[33..36] != [0u8; 3] {
+            return Err(ProgramError::InvalidInstructionData);
+        }
+
         let seed_size = u64::from_le_bytes(data[32 + 4..32 + 4 + 8].try_into().unwrap());
         // let seed_size = unsafe { (data.as_ptr().add(32 + 4) as *const u64).read_unaligned() };
 
@@ -57,6 +66,7 @@ impl AuthorizeWithSeedArgs<'_> {
             return Err(ProgramError::InvalidInstructionData);
         }
 
+        // TODO: test maybe unsafe is not needed here and safe referencing &data[] is the same CU usage
         let args = AuthorizeWithSeedArgs {
             new_authority: unsafe { &*(data.as_ptr() as *const Pubkey) },
             authority_type: unsafe { *(data.as_ptr().add(32) as *const StakeAuthorize) },
@@ -86,7 +96,11 @@ impl AuthorizeCheckedWithSeedArgs<'_> {
             return Err(ProgramError::InvalidInstructionData);
         }
         // check authority type variants
-        if data[32] > 1 {
+        if data[0] > 1 {
+            return Err(ProgramError::InvalidInstructionData);
+        }
+
+        if data[1..4] != [0u8; 3] {
             return Err(ProgramError::InvalidInstructionData);
         }
 
@@ -97,6 +111,7 @@ impl AuthorizeCheckedWithSeedArgs<'_> {
             return Err(ProgramError::InvalidInstructionData);
         }
 
+        // TODO: test maybe unsafe is not needed here and safe referencing &data[] is the same CU usage
         let args = AuthorizeCheckedWithSeedArgs {
             authority_type: unsafe { *(data.as_ptr() as *const StakeAuthorize) },
             authority_seed: unsafe {
@@ -201,7 +216,7 @@ pub fn process_authorize_with_seed(accounts: &[AccountInfo], data: &[u8]) -> Pro
 }
 
 pub fn process_authorize_checked(accounts: &[AccountInfo], data: &[u8]) -> ProgramResult {
-    if data.len() < core::mem::size_of::<StakeAuthorize>() {
+    if data.len() < 4 {
         return Err(ProgramError::InvalidInstructionData);
     }
 
@@ -210,6 +225,10 @@ pub fn process_authorize_checked(accounts: &[AccountInfo], data: &[u8]) -> Progr
         1 => StakeAuthorize::Withdrawer,
         _ => return Err(ProgramError::InvalidInstructionData),
     };
+
+    if data[1..4] != [0u8; 3] {
+        return Err(ProgramError::InvalidInstructionData);
+    }
 
     let [stake_account_info, clock_info, _old_stake_or_withdraw_authority_info, new_stake_or_withdraw_authority_info, remaining @ ..] =
         accounts
