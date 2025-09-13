@@ -34,7 +34,7 @@ pub type UnixTimestamp = PodI64;
 
 pub fn get_stake_state(
     stake_account_info: &AccountInfo,
-) -> Result<Ref<StakeStateV2>, ProgramError> {
+) -> Result<Ref<'_, StakeStateV2>, ProgramError> {
     if !stake_account_info.is_owned_by(&crate::ID) {
         return Err(ProgramError::InvalidAccountOwner);
     }
@@ -58,7 +58,7 @@ pub unsafe fn get_stake_state_unchecked(
 
 pub fn get_stake_state_mut(
     stake_account_info: &AccountInfo,
-) -> Result<RefMut<StakeStateV2>, ProgramError> {
+) -> Result<RefMut<'_, StakeStateV2>, ProgramError> {
     if !stake_account_info.is_owned_by(&crate::ID) {
         return Err(ProgramError::InvalidAccountOwner);
     }

@@ -8,7 +8,7 @@ use pinocchio_pubkey::pubkey;
 
 pub const CLOCK_ID: Pubkey = pubkey!("SysvarC1ock11111111111111111111111111111111");
 
-pub fn from_account_info(account_info: &AccountInfo) -> Result<Ref<Clock>, ProgramError> {
+pub fn from_account_info(account_info: &AccountInfo) -> Result<Ref<'_, Clock>, ProgramError> {
     if account_info.key() != &CLOCK_ID {
         return Err(ProgramError::InvalidArgument);
     }

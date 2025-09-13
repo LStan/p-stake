@@ -10,18 +10,9 @@ use crate::state::{
     get_stake_state, get_stake_state_mut, Epoch, SetLockupSignerArgs, StakeStateV2, UnixTimestamp,
 };
 
-#[cfg(not(test))]
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct LockupArgs {
-    pub unix_timestamp: Option<UnixTimestamp>,
-    pub epoch: Option<Epoch>,
-    pub custodian: Option<Pubkey>,
-}
-
-#[cfg(test)]
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, serde::Serialize)]
+#[cfg_attr(test, derive(serde::Serialize))]
 pub struct LockupArgs {
     pub unix_timestamp: Option<UnixTimestamp>,
     pub epoch: Option<Epoch>,
@@ -131,17 +122,9 @@ impl LockupArgs {
     }
 }
 
-#[cfg(not(test))]
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct LockupCheckedArgs {
-    pub unix_timestamp: Option<UnixTimestamp>,
-    pub epoch: Option<Epoch>,
-}
-
-#[cfg(test)]
-#[repr(C)]
-#[derive(Clone, Copy, Debug, PartialEq, serde::Serialize)]
+#[cfg_attr(test, derive(serde::Serialize))]
 pub struct LockupCheckedArgs {
     pub unix_timestamp: Option<UnixTimestamp>,
     pub epoch: Option<Epoch>,

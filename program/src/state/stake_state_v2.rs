@@ -24,7 +24,7 @@ impl StakeStateV2 {
     #[inline]
     pub fn from_account_info(
         account_info: &AccountInfo,
-    ) -> Result<Ref<StakeStateV2>, ProgramError> {
+    ) -> Result<Ref<'_, StakeStateV2>, ProgramError> {
         if account_info.data_len() < Self::size_of() {
             return Err(ProgramError::InvalidAccountData);
         }
@@ -59,7 +59,7 @@ impl StakeStateV2 {
     #[inline]
     pub fn from_account_info_mut(
         account_info: &AccountInfo,
-    ) -> Result<RefMut<StakeStateV2>, ProgramError> {
+    ) -> Result<RefMut<'_, StakeStateV2>, ProgramError> {
         if account_info.data_len() < Self::size_of() {
             return Err(ProgramError::InvalidAccountData);
         }
@@ -77,7 +77,8 @@ impl StakeStateV2 {
     /// # Safety
     ///
     /// The caller must ensure that it is safe to borrow the account data – e.g., there are
-    /// no mutable borrows of the account data.
+    /// no borrows of the account data.
+    #[allow(clippy::mut_from_ref)]
     #[inline]
     pub unsafe fn from_account_info_mut_unchecked(
         account_info: &AccountInfo,

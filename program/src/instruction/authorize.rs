@@ -46,7 +46,7 @@ pub struct AuthorizeWithSeedArgs<'a> {
 
 impl AuthorizeWithSeedArgs<'_> {
     #[inline(always)]
-    fn from_data(data: &[u8]) -> Result<AuthorizeWithSeedArgs, ProgramError> {
+    fn from_data(data: &[u8]) -> Result<AuthorizeWithSeedArgs<'_>, ProgramError> {
         if data.len() < 32 + 4 + 8 + 32 {
             return Err(ProgramError::InvalidInstructionData);
         }
@@ -91,7 +91,7 @@ pub struct AuthorizeCheckedWithSeedArgs<'a> {
 
 impl AuthorizeCheckedWithSeedArgs<'_> {
     #[inline(always)]
-    fn from_data(data: &[u8]) -> Result<AuthorizeCheckedWithSeedArgs, ProgramError> {
+    fn from_data(data: &[u8]) -> Result<AuthorizeCheckedWithSeedArgs<'_>, ProgramError> {
         if data.len() < 4 + 8 + 32 {
             return Err(ProgramError::InvalidInstructionData);
         }
